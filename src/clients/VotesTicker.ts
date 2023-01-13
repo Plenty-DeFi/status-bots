@@ -51,7 +51,7 @@ export default class VotesTicker {
           .dividedBy(10 ** 18)
           .decimalPlaces(0)
           .toNumber()
-          .toLocaleString()} PLY`
+          .toLocaleString()}`
       );
 
       const percentage = new BigNumber(epochVotes)
