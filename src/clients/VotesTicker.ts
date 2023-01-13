@@ -54,15 +54,21 @@ export default class VotesTicker {
           .toLocaleString()} PLY`
       );
 
-      this._client.user?.setActivity(
-        `Votes: ${new BigNumber(epochVotes)
-          .dividedBy(epochVotingPower)
-          .multipliedBy(100)
-          .toFixed(2)}%`,
-        {
-          type: ActivityType.Watching,
-        }
-      );
+      const percentage = new BigNumber(epochVotes)
+        .dividedBy(epochVotingPower)
+        .multipliedBy(100)
+        .toFixed(2);
+
+      this._client.user?.setPresence({
+        status: "online",
+        activities: [
+          {
+            name: `Votes: ${percentage}%`,
+            type: ActivityType.Watching,
+            url: "https://app.plenty.network/vote",
+          },
+        ],
+      });
     } catch (err) {
       throw err;
     }

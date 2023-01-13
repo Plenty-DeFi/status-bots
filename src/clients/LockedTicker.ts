@@ -52,15 +52,21 @@ export default class LockedTicker {
           .toLocaleString()} PLY`
       );
 
-      this._client.user?.setActivity(
-        `Locked: ${new BigNumber(lockedSupply)
-          .dividedBy(totalSupply)
-          .multipliedBy(100)
-          .toFixed(2)}%`,
-        {
-          type: ActivityType.Watching,
-        }
-      );
+      const percentage = new BigNumber(lockedSupply)
+        .dividedBy(totalSupply)
+        .multipliedBy(100)
+        .toFixed(2);
+
+      this._client.user?.setPresence({
+        status: "online",
+        activities: [
+          {
+            name: `Locked: ${percentage}%`,
+            type: ActivityType.Watching,
+            url: "https://app.plenty.network/vote",
+          },
+        ],
+      });
     } catch (err) {
       throw err;
     }
