@@ -38,10 +38,14 @@ export default class PriceTicker {
 
   private async _updateTicker(price: string, change24H: string) {
     try {
-      await this._client.user?.setUsername(
-        `💵 PLY $${new BigNumber(price).precision(3).toString()}`
-      );
-      this._client.user?.setActivity(`24H: ${change24H}%`, { type: ActivityType.Watching });
+      const plyPrice = new BigNumber(price).precision(3).toString();
+
+      console.log(`Record PLY Price: ${plyPrice} (${change24H}%)`);
+
+      await this._client.user?.setUsername(`💵 PLY $${plyPrice}`);
+      this._client.user?.setActivity(`24H: ${parseFloat(change24H) > 0 ? "+" : ""}${change24H}%`, {
+        type: ActivityType.Watching,
+      });
     } catch (err) {
       throw err;
     }
