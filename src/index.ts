@@ -1,3 +1,4 @@
+import axios from "axios";
 import * as dotenv from "dotenv";
 import { TezosToolkit } from "@taquito/taquito";
 
@@ -5,6 +6,12 @@ import PriceTicker from "./clients/PriceTicker";
 import LockedTicker from "./clients/LockedTicker";
 import VotesTicker from "./clients/VotesTicker";
 import BlockListener from "./infrastructure/BlockListerner";
+
+// Axios retry
+axios.interceptors.response.use(undefined, async (error) => {
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  return axios.request(error.config);
+});
 
 dotenv.config();
 import { config } from "./config";

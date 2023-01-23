@@ -8,11 +8,15 @@ export default class LockedTicker {
   private _token: string;
   private _client: Client;
   private _tzktURL: string;
+  private _lastLocked: string;
+  private _lastPercentage: string;
 
   constructor({ tokens, tzktURL }: Config) {
     this._token = tokens.lockedTicker;
     this._tzktURL = tzktURL;
     this._client = new Client({ intents: [GatewayIntentBits.Guilds] });
+    this._lastLocked = "";
+    this._lastPercentage = "";
   }
 
   async init() {
@@ -34,29 +38,27 @@ export default class LockedTicker {
       const __res = await axios.get(
         `${this._tzktURL}/contracts/KT1JVjgXPMMSaa6FkzeJcgb8q9cUaLmwaJUX/storage`
       );
-      const lockedSupply = _res.data.locked_supply;
-      const totalSupply = __res.data.totalSupply;
-      await this._updateTicker(lockedSupply, totalSupply);
+      const lockedSupply = new BigNumber(_res.data.locked_supply)
+        .dividedBy(10 ** 18)
+        .decimalPlaces(0)
+        .toNumber()
+        .toLocaleString();
+      const percentage = new BigNumber(_res.data.locked_supply)
+        .dividedBy(__res.data.totalSupply)
+        .multipliedBy(100)
+        .toFixed(2);
+      if (this._lastLocked !== lockedSupply && this._lastPercentage !== percentage) {
+        await this._updateTicker(lockedSupply, percentage);
+      }
     } catch (err) {
       throw err;
     }
   }
 
-  private async _updateTicker(lockedSupply: string, totalSupply: string) {
+  private async _updateTicker(lockedSupply: string, percentage: string) {
     try {
-      await this._client.user?.setUsername(
-        `🔐 ${new BigNumber(lockedSupply)
-          .dividedBy(10 ** 18)
-          .decimalPlaces(0)
-          .toNumber()
-          .toLocaleString()} PLY`
-      );
-
-      const percentage = new BigNumber(lockedSupply)
-        .dividedBy(totalSupply)
-        .multipliedBy(100)
-        .toFixed(2);
-
+      console.log(`Record Locked: ${lockedSupply} (${percentage}%) at ${new Date().toUTCString()}`);
+      await this._client.user?.setUsername(`🔐 ${lockedSupply} PLY`);
       this._client.user?.setPresence({
         status: "online",
         activities: [
@@ -67,6 +69,8 @@ export default class LockedTicker {
           },
         ],
       });
+      this._lastLocked = lockedSupply;
+      this._lastPercentage = percentage;
     } catch (err) {
       throw err;
     }
