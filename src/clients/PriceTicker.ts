@@ -46,13 +46,13 @@ export default class PriceTicker {
 
   private async _updateTicker(plyPrice: string, change24H: string) {
     try {
+      this._lastPrice = plyPrice;
+      this._lastChange = change24H;
       console.log(`Record PLY Price: ${plyPrice} (${change24H}%) at ${new Date().toUTCString()}`);
       await this._client.user?.setUsername(`💵 PLY $${plyPrice}`);
       this._client.user?.setActivity(`24H: ${parseFloat(change24H) > 0 ? "+" : ""}${change24H}%`, {
         type: ActivityType.Watching,
       });
-      this._lastPrice = plyPrice;
-      this._lastChange = change24H;
     } catch (err) {
       throw err;
     }

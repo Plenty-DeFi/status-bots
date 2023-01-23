@@ -60,6 +60,8 @@ export default class VotesTicker {
 
   private async _updateTicker(epochVotes: string, percentage: string) {
     try {
+      this._lastVotes = epochVotes;
+      this._lastPercentage = percentage;
       console.log(`Record Voters: ${epochVotes} (${percentage}%) at ${new Date().toUTCString()}`);
       await this._client.user?.setUsername(`🗳️ ${epochVotes}`);
       this._client.user?.setPresence({
@@ -72,8 +74,6 @@ export default class VotesTicker {
           },
         ],
       });
-      this._lastVotes = epochVotes;
-      this._lastPercentage = percentage;
     } catch (err) {
       throw err;
     }

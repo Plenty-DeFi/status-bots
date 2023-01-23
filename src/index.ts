@@ -29,13 +29,9 @@ import { config } from "./config";
   await votesTickerClient.init();
 
   const blockListener = new BlockListener(config);
-  blockListener.start(async () => {
-    try {
-      await priceTickerClient.providePrice();
-      await lockedTickerClient.provideLockedValue();
-      await votesTickerClient.provideVotesValue();
-    } catch (err: any) {
-      console.log(err.message);
-    }
+  blockListener.start(() => {
+    priceTickerClient.providePrice();
+    lockedTickerClient.provideLockedValue();
+    votesTickerClient.provideVotesValue();
   });
 })();

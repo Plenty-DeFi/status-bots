@@ -57,6 +57,8 @@ export default class LockedTicker {
 
   private async _updateTicker(lockedSupply: string, percentage: string) {
     try {
+      this._lastLocked = lockedSupply;
+      this._lastPercentage = percentage;
       console.log(`Record Locked: ${lockedSupply} (${percentage}%) at ${new Date().toUTCString()}`);
       await this._client.user?.setUsername(`🔐 ${lockedSupply} PLY`);
       this._client.user?.setPresence({
@@ -69,8 +71,6 @@ export default class LockedTicker {
           },
         ],
       });
-      this._lastLocked = lockedSupply;
-      this._lastPercentage = percentage;
     } catch (err) {
       throw err;
     }
