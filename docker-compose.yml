@@ -7,3 +7,4 @@ services:
       PRICE_TICKER_TOKEN: "${PRICE_TICKER_TOKEN}"
       LOCKED_TICKER_TOKEN: "${LOCKED_TICKER_TOKEN}"
       VOTES_TICKER_TOKEN: "${VOTES_TICKER_TOKEN}"
+    restart: on-failure
