@@ -10,6 +10,7 @@ export default class PriceTicker {
   private _analyticsURL: string;
   private _lastPrice: string;
   private _lastChange: string;
+  private _lastDiscordHit: Date;
 
   constructor({ tokens, analyticsURL }: Config) {
     this._token = tokens.priceTicker;
@@ -17,6 +18,7 @@ export default class PriceTicker {
     this._client = new Client({ intents: [GatewayIntentBits.Guilds] });
     this._lastPrice = "";
     this._lastChange = "";
+    this._lastDiscordHit = new Date();
   }
 
   async init() {
@@ -37,7 +39,10 @@ export default class PriceTicker {
       const price = new BigNumber(tokenData.price.value).precision(3).toString();
       const change = tokenData.price.change24H;
       if (this._lastPrice !== price && this._lastChange !== change) {
-        await this._updateTicker(price, change);
+        if (new Date().getTime() - this._lastDiscordHit.getTime() > 900000) {
+          this._lastDiscordHit = new Date();
+          await this._updateTicker(price, change);
+        }
       }
     } catch (err) {
       throw err;
