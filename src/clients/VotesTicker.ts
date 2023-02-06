@@ -12,6 +12,7 @@ export default class VotesTicker {
   private _veInstance: DefaultContractType;
   private _lastVotes: string;
   private _lastPercentage: string;
+  private _lastDiscordHit: Date;
 
   constructor({ tokens, tzktURL }: Config, veInstance: DefaultContractType) {
     this._token = tokens.votesTicker;
@@ -20,6 +21,7 @@ export default class VotesTicker {
     this._veInstance = veInstance;
     this._lastVotes = "";
     this._lastPercentage = "";
+    this._lastDiscordHit = new Date("2023-01-01");
   }
 
   async init() {
@@ -51,7 +53,10 @@ export default class VotesTicker {
         .multipliedBy(100)
         .toFixed(2);
       if (this._lastVotes !== epochVotes && this._lastPercentage !== percentage) {
-        await this._updateTicker(epochVotes, percentage);
+        if (new Date().getTime() - this._lastDiscordHit.getTime() > 900000) {
+          this._lastDiscordHit = new Date();
+          await this._updateTicker(epochVotes, percentage);
+        }
       }
     } catch (err) {
       throw err;

@@ -10,6 +10,7 @@ export default class LockedTicker {
   private _tzktURL: string;
   private _lastLocked: string;
   private _lastPercentage: string;
+  private _lastDiscordHit: Date;
 
   constructor({ tokens, tzktURL }: Config) {
     this._token = tokens.lockedTicker;
@@ -17,6 +18,7 @@ export default class LockedTicker {
     this._client = new Client({ intents: [GatewayIntentBits.Guilds] });
     this._lastLocked = "";
     this._lastPercentage = "";
+    this._lastDiscordHit = new Date("2023-01-01");
   }
 
   async init() {
@@ -48,7 +50,10 @@ export default class LockedTicker {
         .multipliedBy(100)
         .toFixed(2);
       if (this._lastLocked !== lockedSupply && this._lastPercentage !== percentage) {
-        await this._updateTicker(lockedSupply, percentage);
+        if (new Date().getTime() - this._lastDiscordHit.getTime() > 900000) {
+          this._lastDiscordHit = new Date();
+          await this._updateTicker(lockedSupply, percentage);
+        }
       }
     } catch (err) {
       throw err;

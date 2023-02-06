@@ -18,7 +18,7 @@ export default class PriceTicker {
     this._client = new Client({ intents: [GatewayIntentBits.Guilds] });
     this._lastPrice = "";
     this._lastChange = "";
-    this._lastDiscordHit = new Date();
+    this._lastDiscordHit = new Date("2023-01-01");
   }
 
   async init() {
